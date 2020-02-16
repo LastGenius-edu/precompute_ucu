@@ -24,6 +24,8 @@ def read_file(path):
     used_locations_dict = dict()
 
     with open('locations_final.csv', "w") as file:
+        with open("tmp.txt", "w") as tmp:
+            tmp.write("opened the file")
         for movie in movie_data:
             try:
                 location_name = movie[2].strip("/n")
@@ -33,8 +35,7 @@ def read_file(path):
                     coordinates = geolocator.geocode(location_name)
                     coordinates = (coordinates.latitude, coordinates.longitude)
                     used_locations_dict[location_name] = coordinates
-                with open("tmp.txt", "w") as tmp:
-                    tmp.write(','.join([movie, coordinates[0], coordinates[1]]))
+                # print(movie, coordinates[0], coordinates[1])
                 file.write(','.join([movie[0], movie[1], location_name, coordinates[0], coordinates[1]]))
             except:
                 continue
