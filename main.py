@@ -1,0 +1,44 @@
+import folium
+import pandas
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+
+
+def read_file(path):
+    '''
+    (string) -> None
+
+    Reads the file and adds all the
+    '''
+    print("HUY")
+    geolocator = Nominatim(user_agent="LastGenius", timeout=1)
+    geocode = RateLimiter(geolocator.geocode, min_delay_seconds=0.01)
+    data = pandas.read_csv(path, error_bad_lines=False, warn_bad_lines=False)
+    movie = data['movie']
+    year = data['year']
+    location = data['location']
+    movie_data = zip(movie, year, location)
+    with open('locations_final.csv', "w") as file:
+        for movie in movie_data:
+            try:
+                coordinates = geolocator.geocode(movie[2].strip("/n"))
+                print(movie, coordinates.latitude, coordinates.longitude)
+                file.write(','.join([movie[0], movie[1], movie[2], coordinates.latitude, coordinates.longitude]))
+            except:
+                continue
+
+
+def main():
+    # year = input("Please enter a year you would like to have a map for: ")
+    # lat, long = map((lambda x: float(x)), input("Please enter your location (format: lat, long): ").split(", "))
+    path = "locations.csv"
+    map = folium.Map()
+    read_file(path)
+    # location_data = read_location(movies)
+    # print(location_data)
+    map.save("map.html")
+
+
+if __name__ == '__main__':
+    main()
+
